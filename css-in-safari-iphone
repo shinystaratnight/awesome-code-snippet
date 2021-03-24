@@ -1,0 +1,5 @@
+@media not all and (min-resolution:.001dpcm) {
+    @supports (-webkit-appearance:none) {
+        iPhone Safari에서 체크할때 iphone의 밑부분의 toolbar때문에 100vh가 가리워지는 현상이 나타난다. 이것을 막기 위해 쓴다는데.. 확인은 못했음.
+    }
+}
