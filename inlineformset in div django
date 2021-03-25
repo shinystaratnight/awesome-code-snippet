@@ -1,0 +1,17 @@
+{{ formset.management_form|crispy }}
+{% for form in formset %}
+    <div class="{% cycle 'row1' 'row2' %} formset_row-{{ formset.prefix }}">
+        {% for field in form.visible_fields %}
+        <div class="my-1 d-inline-block" style="width: 90%;">
+            {% if forloop.first %}
+            {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+            {% endfor %}
+            {% endif %}
+            {{ field|as_crispy_field }}
+            <!-- {{ field.errors.as_ul }} -->
+            <!-- {{form.non_field_errors}} -->
+        </div>
+        {% endfor %}
+    </div>
+{% endfor %}
