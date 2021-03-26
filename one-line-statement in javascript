@@ -1,0 +1,40 @@
+After a if or loop (for, while) you can ommit the { if you have only one statement after it. So
+
+if (condition)
+    someFunction();
+equals to
+
+if (condition) {
+    someFunction();
+}
+And
+
+if (condition) a(); b();
+equals to
+
+if (condition) {
+    a();
+}
+b();
+You can even nest that:
+
+if (condition) 
+    while(condition2)
+        if (condition3)
+            someFunction();
+
+============================================================================================
+
+As long it's one instruction you can omit curly brackets.
+
+for(var key in foo) 
+    if(foo.hasOwnProperty(key))
+        console.log(foo[key]); // prints out 1
+
+for(var key in foo)
+    if(foo.hasOwnProperty(key))
+        for(var i=0; i<=10; i++) {  
+            console.log(foo[key]); // prints out 1
+            console.log(foo[key]); // prints out 1
+            console.log(foo[key]); // prints out 1
+        }
