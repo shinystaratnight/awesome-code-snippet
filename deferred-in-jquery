@@ -1,0 +1,24 @@
+Here I am not going to describe selectBoxIt. 
+What I want to focus on is the use of $.deferred
+
+
+// Calls the selectBoxIt method on your HTML select box
+  $("select").selectBoxIt({
+    defaultText: "Greg Franko Github Repos",
+    // Populates the drop down using a jQuery deferred object
+    populate: function() {
+        var deferred = $.Deferred(),
+            arr = [],
+            x = -1;
+        $.ajax({
+            url: 'https://api.github.com/users/gfranko/repos'
+        }).done(function(data) {
+            while(++x < data.length) {
+                arr.push(data[x].name);
+            }
+            deferred.resolve(arr);
+        });
+        return deferred;
+    }
+
+  });
