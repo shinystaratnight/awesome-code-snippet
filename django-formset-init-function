@@ -1,0 +1,67 @@
+https://micropyramid.medium.com/understanding-djangos-model-fromsets-in-detail-and-their-advanced-usage-131dfe66853d
+
+Step1: Create model in models.py
+  class User(models.Model):
+      first_name = models.CharField(max_length=150)
+      last_name = models.CharField(max_length=150)
+      user_group = models.ForeignKey(Group)
+      birth_date = models.DateField(blank=True, null=True)
+Step2: in forms.py
+  from django.forms.models import modelformset_factory
+  from myapp.models import User
+  
+  1)
+  UserFormSet = modelformset_factory(User, exclude=())
+  formset = UserFormSet(queryset=User.objects.filter(first_name__startswith='M'))
+  
+  2)
+  class UserForm(forms.ModelForm):
+      birth_date = forms.DateField(widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickSeconds": False}))
+      class Meta:
+          model = User
+          exclude = ()
+  UserFormSet = modelformset_factory(User, form=UserForm)
+  
+  3)
+  class UserForm(forms.ModelForm):
+      birth_date = forms.DateField(widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickSeconds": False}))
+      class Meta:
+          model = User
+          exclude = ()
+      def __init__(self, *args, **kwargs):
+          self.businessprofile_id = kwargs.pop('businessprofile_id')
+          super(UserForm, self).__init__(*args, **kwargs)
+          self.fields['user_group'].queryset = Group.objects.filter(business_profile_id = self.businessprofile_id)
+  BaseUserFormSet = modelformset_factory(User, form=UserForm, extra=1, can_delete=True)
+  class UserFormSet(BaseUserFormSet):
+      def __init__(self, *args, **kwargs):
+          #  create a user attribute and take it out from kwargs
+          # so it doesn't messes up with the other formset kwargs
+          self.businessprofile_id = kwargs.pop('businessprofile_id')
+          super(UserFormSet, self).__init__(*args, **kwargs)
+          for form in self.forms:
+              form.empty_permitted = False
+      def _construct_form(self, *args, **kwargs):
+          # inject user in each form on the formset
+          kwargs['businessprofile_id'] = self.businessprofile_id
+          return super(UserFormSet, self)._construct_form(*args, **kwargs)
+
+Step3: in views.py
+  from myapp.forms import UserFormSet
+  from django.shortcuts import render_to_response
+  def manage_users(request):
+      if request.method == 'POST':
+          formset = UserFormSet(businessprofile_id=businessprofileid, data=request.POST)
+          if formset.is_valid():
+              formset.save()
+              # do something
+      else:
+          formset = UserFormSet(businessprofile_id=businessprofileid)
+      return render_to_response("manage_users.html", {"formset": formset})
+
+
+Step4: in template
+  <form method="post" action="">
+               {{ formset }}
+  </form>
+  
